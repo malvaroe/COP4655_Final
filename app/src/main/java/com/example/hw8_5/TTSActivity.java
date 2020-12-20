@@ -5,20 +5,26 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class TTSActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     TextView cityText, degText, feelsText, humidText, windText, cloudText, pressureText, riseText, setText, geoText;
     WeatherData weatherData = MainActivity.getWeatherData();
+    Button ttsButton;
+    TextToSpeech t1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +33,23 @@ public class TTSActivity extends AppCompatActivity {
 
         getSupportActionBar().hide();
 
+        ttsButton = (Button) findViewById(R.id.ttsButton);
+
+        t1=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status != TextToSpeech.ERROR) {
+                    t1.setLanguage(Locale.US);
+                }
+            }
+        });
+
+        ttsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                t1.speak("The temperature in " + weatherData.getCity() + "is " + Math.floor(getTemp(weatherData.getTemp())) + " degrees Fahrenheit", TextToSpeech.QUEUE_FLUSH, null);
+            }
+        });
 
         cityText = findViewById(R.id.cityText);
         degText = findViewById(R.id.degText);
